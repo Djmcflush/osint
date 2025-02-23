@@ -23,7 +23,7 @@ export function useDataPoints() {
     const interval = setInterval(() => {
       const newDataPoint = {
         id: Math.random().toString(36),
-        country: ['USA', 'UK', 'France', 'Germany', 'Japan'][Math.floor(Math.random() * 5)],
+        country: ['USA', 'UK', 'France', 'Germany', 'Japan', 'Russia', 'Ukraine'][Math.floor(Math.random() * 5)],
         coordinates: {
           lat: Math.random() * 180 - 90,
           long: Math.random() * 360 - 180,
