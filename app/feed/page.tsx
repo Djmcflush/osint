@@ -69,7 +69,7 @@ export default function IntelDashboard() {
           <div className="text-4xl font-bold text-gray-100 mb-4">
             {stats.totalReports}
           </div>
-          <ActivityVisualization />
+          <ActivityVisualization dataPoints={dataPoints} />
         </div>
 
         {/* Right Column - Unified Data Stream */}

@@ -12,30 +12,36 @@ interface Segment {
   y: number // Changed to absolute y position
   height: number
   intensity: number
-  baseColor: string
+  baseColor: { r: number; g: number; b: number }
   fadeSpeed: number // Added for varying fade speeds
 }
 
-const LANE_COLORS = [
-  { r: 0,   g: 242, b: 255 },  // bright aqua
-  { r: 255, g: 107, b: 153 },  // bright pink
-  { r: 255, g: 140, b: 0 },    // bright orange
-  { r: 255, g: 93,  b: 226 },  // bright magenta
-  { r: 255, g: 196, b: 0 },    // bright yellow
-  { r: 126, g: 255, b: 0 },    // bright green
-  { r: 183, g: 107, b: 255 },  // bright purple
-  { r: 98,  g: 182, b: 255 },  // bright blue
-]
+const CLASSIFICATION_COLORS = {
+  cui: { r: 255, g: 184, b: 0 },
+  secret: { r: 255, g: 68, b: 68 },
+  topsecret: { r: 255, g: 0, b: 0 },
+  unclassified: { r: 68, g: 255, b: 68 },
+}
 
-function interpolateColor(baseColor: (typeof LANE_COLORS)[0], intensity: number) {
+function parseHexColorToRgb(hex: string) {
+  const sanitized = hex.replace('#', '');
+  const r = parseInt(sanitized.slice(0, 2), 16);
+  const g = parseInt(sanitized.slice(2, 4), 16);
+  const b = parseInt(sanitized.slice(4, 6), 16);
+  return { r, g, b };
+}
+
+function interpolateColor(baseColor: { r: number; g: number; b: number }, intensity: number) {
   const r = Math.round(255 - (255 - baseColor.r) * intensity)
   const g = Math.round(255 - (255 - baseColor.g) * intensity)
   const b = Math.round(255 - (255 - baseColor.b) * intensity)
   return `rgb(${r}, ${g}, ${b})`
 }
 
+import { DataPoint } from "../hooks/useDataPoints";
+
 interface ActivityVisualizationProps {
-  dataPoints?: number[];
+  dataPoints?: DataPoint[];
 }
 
 export default function ActivityVisualization({ dataPoints }: ActivityVisualizationProps) {
@@ -65,16 +71,26 @@ export default function ActivityVisualization({ dataPoints }: ActivityVisualizat
 
       setLanes((prevLanes) =>
         prevLanes.map((lane, laneIndex) => {
-          // Add new segments randomly along the height
-          if (Math.random() < SEGMENT_CHANCE && lane.length < MAX_SEGMENTS) {
-            lane.push({
-              x: laneIndex * laneWidth + (laneWidth - segmentWidth) / 2,
-              y: Math.random() * canvas.offsetHeight, // Random vertical position
-              height: Math.random() * 15 + 5,
-              intensity: Math.random() * 0.3 + 0.7,
-              baseColor: interpolateColor(LANE_COLORS[laneIndex], Math.random()),
-              fadeSpeed: Math.random() * 0.03 + 0.02, // Random fade speed
-            })
+          // Clear lane each frame
+          lane = [];
+
+          // If we have dataPoints, convert each dataPoint to a segment
+          if (dataPoints && dataPoints.length > 0) {
+            dataPoints.forEach((dp) => {
+              const laneIndexForPoint = Math.floor(Math.random() * LANES);
+              const classificationColor = CLASSIFICATION_COLORS[dp.classification];
+              // map the classification color to (r,g,b)
+              if (classificationColor) {
+                lane.push({
+                  x: laneIndexForPoint * laneWidth + (laneWidth - segmentWidth) / 2,
+                  y: Math.random() * canvas.offsetHeight,
+                  height: Math.random() * 15 + 5,
+                  intensity: Math.random() * 0.5 + 0.5,
+                  baseColor: classificationColor,
+                  fadeSpeed: Math.random() * 0.03 + 0.02,
+                });
+              }
+            });
           }
 
           // Update existing segments
@@ -89,12 +105,10 @@ export default function ActivityVisualization({ dataPoints }: ActivityVisualizat
       )
 
       // Draw lanes
-      lanes.forEach((lane, laneIndex) => {
-        const laneX = laneIndex * laneWidth + (laneWidth - segmentWidth) / 2
-
+      lanes.forEach((lane) => {
         // Draw active segments
         lane.forEach((segment) => {
-          const color = interpolateColor(LANE_COLORS[laneIndex], segment.intensity)
+          const color = interpolateColor(segment.baseColor, segment.intensity)
 
           ctx.shadowColor = color
           ctx.shadowBlur = 15
