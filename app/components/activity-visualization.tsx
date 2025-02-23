@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react"
 import { Settings } from "lucide-react"
 
-const LANES = 8
+const LANES = 4
 const MAX_SEGMENTS = 200
 const SEGMENT_CHANCE = 0.2 // Increased chance for more activity
 
@@ -62,47 +62,57 @@ export default function ActivityVisualization({ dataPoints }: ActivityVisualizat
     canvas.height = canvas.offsetHeight * dpr
     ctx.scale(dpr, dpr)
 
-    const laneWidth = canvas.offsetWidth / LANES
-    const segmentWidth = laneWidth * 0.4
+    // Create a map from classification to lane index
+    const classificationLaneMap: Record<string, number> = {
+      cui: 0,
+      secret: 1,
+      topsecret: 2,
+      unclassified: 3
+    };
+
+    const laneWidth = canvas.offsetWidth / LANES;
+    const segmentWidth = laneWidth * 0.4;
 
     const animate = () => {
-      ctx.fillStyle = "#060809"
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.fillStyle = "#060809";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      setLanes((prevLanes) =>
+      setLanes(prevLanes =>
         prevLanes.map((lane, laneIndex) => {
           // Clear lane each frame
           lane = [];
 
           // If we have dataPoints, convert each dataPoint to a segment
           if (dataPoints && dataPoints.length > 0) {
-            dataPoints.forEach((dp) => {
-              const laneIndexForPoint = Math.floor(Math.random() * LANES);
+            dataPoints.forEach(dp => {
               const classificationColor = CLASSIFICATION_COLORS[dp.classification];
-              // map the classification color to (r,g,b)
+              const mappedLane = classificationLaneMap[dp.classification] ?? 0; 
               if (classificationColor) {
-                lane.push({
-                  x: laneIndexForPoint * laneWidth + (laneWidth - segmentWidth) / 2,
-                  y: Math.random() * canvas.offsetHeight,
-                  height: Math.random() * 15 + 5,
-                  intensity: Math.random() * 0.5 + 0.5,
-                  baseColor: classificationColor,
-                  fadeSpeed: Math.random() * 0.03 + 0.02,
-                });
+                // Only push into current lane if it matches the mapped laneIndex
+                if (mappedLane === laneIndex) {
+                  lane.push({
+                    x: laneIndex * laneWidth + (laneWidth - segmentWidth) / 2,
+                    y: Math.random() * canvas.offsetHeight,
+                    height: Math.random() * 15 + 5,
+                    intensity: Math.random() * 0.5 + 0.5,
+                    baseColor: classificationColor,
+                    fadeSpeed: Math.random() * 0.03 + 0.02
+                  });
+                }
               }
             });
           }
 
           // Update existing segments
           return lane
-            .map((segment) => ({
+            .map(segment => ({
               ...segment,
               y: (segment.y + speed) % canvas.offsetHeight, // Move vertically based on speed
-              intensity: segment.intensity - segment.fadeSpeed * speed,
+              intensity: segment.intensity - segment.fadeSpeed * speed
             }))
-            .filter((segment) => segment.intensity > 0.1)
-        }),
-      )
+            .filter(segment => segment.intensity > 0.1);
+        })
+      );
 
       // Draw lanes
       lanes.forEach((lane) => {
