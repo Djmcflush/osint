@@ -17,14 +17,14 @@ interface Segment {
 }
 
 const LANE_COLORS = [
-  { r: 79, g: 209, b: 197 }, // teal
-  { r: 149, g: 128, b: 247 }, // purple
-  { r: 247, g: 128, b: 189 }, // pink
-  { r: 247, g: 128, b: 128 }, // red
-  { r: 128, g: 200, b: 247 }, // blue
-  { r: 247, g: 181, b: 128 }, // orange
-  { r: 169, g: 247, b: 128 }, // green
-  { r: 247, g: 128, b: 242 }, // magenta
+  { r: 0,   g: 242, b: 255 },  // bright aqua
+  { r: 255, g: 107, b: 153 },  // bright pink
+  { r: 255, g: 140, b: 0 },    // bright orange
+  { r: 255, g: 93,  b: 226 },  // bright magenta
+  { r: 255, g: 196, b: 0 },    // bright yellow
+  { r: 126, g: 255, b: 0 },    // bright green
+  { r: 183, g: 107, b: 255 },  // bright purple
+  { r: 98,  g: 182, b: 255 },  // bright blue
 ]
 
 function interpolateColor(baseColor: (typeof LANE_COLORS)[0], intensity: number) {
@@ -34,7 +34,11 @@ function interpolateColor(baseColor: (typeof LANE_COLORS)[0], intensity: number)
   return `rgb(${r}, ${g}, ${b})`
 }
 
-export default function ActivityVisualization() {
+interface ActivityVisualizationProps {
+  dataPoints?: number[];
+}
+
+export default function ActivityVisualization({ dataPoints }: ActivityVisualizationProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [lanes, setLanes] = useState<Segment[][]>(Array(LANES).fill([]))
   const [speed, setSpeed] = useState(1)
@@ -138,4 +142,3 @@ export default function ActivityVisualization() {
     </div>
   )
 }
-
