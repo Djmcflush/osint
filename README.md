@@ -1,23 +1,29 @@
-# Onlook Starter Template
 
-<p align="center">
-  <img src="app/favicon.ico" />
-</p>
+OSINT: Open Source Intelligence Streaming
+Overview
+OSINT (Open Source Intelligence Streaming) is an open-source project designed to simulate real-time data streaming from all around the world. Inspired by GitHub's global activity visualizations, OSINT provides an engaging platform for observing, analyzing, and interacting with simulated data streams as they flow across the globe.
 
-This is an [Onlook](https://onlook.dev/) project set up with [Next.js](https://nextjs.org/), [TailwindCSS](https://tailwindcss.com/) and [ShadCN](https://ui.shadcn.com).
+The project is built for educational, research, and demonstration purposes, making it ideal for anyone interested in understanding data flow, global trends, and the fundamentals of real-time visualization.
 
-## Getting Started
+Features
+Simulated Real-Time Data Streaming: Watch as simulated data streams flow in from simulated global sources, creating the illusion of dynamic worldwide activity.
+Interactive Visualization: A responsive, animated map shows the geographical origin and destination of each data point, with customizable types of events.
+Custom Stream Scenarios: Configure and create custom event streams to represent different use cases (e.g., simulated API requests, IoT device telemetry, or network traffic).
+Lightweight and Scalable: Built with modern web technologies for smooth performance, even on lower-powered devices.
+Open Source: Fully customizable and extensible for your specific needs.
+Use Cases
+Educational Demonstrations:
 
-First, run the development server:
+Teach concepts like real-time data visualization, networking, and global systems monitoring.
+Create interactive simulations for students or training sessions.
+Event Simulations:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Simulate global-scale activity like a DDoS attack, IoT device telemetry, or online service usage for research or presentations.
+Showcase Projects:
 
-Open [http://localhost:3000](http://localhost:3000) in Onlook to see the result.
+Use OSINT as a visual aid to showcase your platform, architecture, or technology stack in action.
+Hackathons and Demos:
+
+Quickly set up real-time data visualizations for hackathons, product demos, and proof-of-concept projects.
+
+```npm run dev```
